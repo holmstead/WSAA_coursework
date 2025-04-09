@@ -19,7 +19,7 @@ Topics include but not limited to:
 
 ### Assignments
 
-#### Assignment 2 - Card Draw
+- #### Assignment 2 - Card Draw
 
 assignment2-carddraw.py - simulates dealing a deck of cards. Uses Deck of Cards API https://deckofcardsapi.com
 
@@ -46,6 +46,76 @@ github GET and
 
 
 ### Project
+
+A recipe database.
+
+Flask user guide:
+
+- https://flask.palletsprojects.com/en/stable/
+
+Stuff like render_template() and that covered here:
+
+- https://flask.palletsprojects.com/en/stable/api/
+
+Flask tutorial:
+
+- https://www.geeksforgeeks.org/flask-tutorial/
+
+The [Flask tutorial](https://flask.palletsprojects.com/en/stable/tutorial/) in the offical docs wasa a lot of help, especially the [application setup](https://flask.palletsprojects.com/en/stable/tutorial/factory/) bit when starting the project.
+
+
+[freeCodeCamp flask tutorial](https://www.youtube.com/watch?v=Z1RJmh_OqeA) on youtube:
+
+
+Started with directory structure for the project, such as putting the html page template 'index.html' in the template directory:
+
+- https://flask.palletsprojects.com/en/stable/patterns/packages/
+
+
+Created a basic flask server "app.py". Did the skeleton mapping to do some CRUD operations.
+
+
+Created a database using [mysql](https://www.mysql.com/) (mysql-server). Installed on command line:
+
+  - $ sudo apt install mysql-server
+
+Launched my sql:
+
+  $ sudo mysql -u root
+
+When running, created a new database using:
+
+  - create database recipes;
+
+Then created a table in the new database:
+
+  - create table recipe(
+      id int NOT NULL AUTO_INCREMENT,
+      PRIMARY KEY(id)
+      name varchar(250)
+      );
+
+Created a new column in the table:
+
+  ALTER TABLE recipe
+  ADD COLUMN ingredients TEXT;
+
+Created a [Database Access Object (DAO)](https://www.geeksforgeeks.org/data-access-object-pattern/) "recipeDAO.py".
+
+I put the database config info into a seperate file "dbconfig.py".
+
+In the DAO "mysql.connector" is used for connecting python to the mysql database - [W3 schools](https://www.w3schools.com/python/python_mysql_getstarted.asp)
+
+Imported the DAO into the server "app.py."
+
+  from DAO import recipeDAO # imports the DAO
+
+
+Got a [basic html template](https://www.freecodecamp.org/news/basic-html5-template-boilerplate-code-example/).
+
+
+Host on [pythonanywhere](https://www.pythonanywhere.com/).
+
 
 
 ## Get Started
