@@ -1,16 +1,12 @@
 import mysql.connector # for connecting python to the mysql database
+from dbconfig import db_config  # import config from dbconfig.py
 
 # create recipeDAO class
 class RecipeDAO:
     # constructor
     def __init__(self):
         # connect to the database
-        self.db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="root",
-            database="recipes"
-        )
+        self.db = mysql.connector.connect(**db_config) # use the config from dbconfig.py
         # creata a cursor (for executing SQL commands)
         self.cursor = self.db.cursor(dictionary=True) # return as a dictionary
 
