@@ -10,21 +10,23 @@ app = Flask(__name__, static_url_path='', static_folder='.') # Flask constructor
 # Bind the index() funtion to the ‘/’ URL (homepage) 
 @app.route('/')
 def index():
-    # Render the template 'index.html' from the 'templates' folder. render_template is good for dynamic content, so not using staticpages
+    # Render the template 'index.html' from the 'templates' folder
     return render_template('index.html')
 
 # curl "http://127.0.0.1:5000/recipes" 
 @app.route('/recipes', methods=['GET']) # Action: Get All
 def getall():
+    # Fetch all recipes from the DAO
     recipes = recipe_dao.get_all()
-    return jsonify(recipes)
+    # Render the recipes template with the recipes data
+    return render_template('recipes.html', recipes=recipes)
 
 
 # curl "http://127.0.0.1:5000/recipes/1"
 @app.route('/recipes/<int:id>', methods=['GET']) # Action: Get. <int:id> is a variable, URL looks like ~/recipes/1
 def get_recipe_by_id(id):
     recipe = recipe_dao.find_by_id(id) # uses DAO method
-    return jsonify(recipe)  # Return the recipe as JSON
+    return render_template('recipe.html', recipe=recipe)
 
 
 # curl "http://127.0.0.1:5000/recipes"
