@@ -111,7 +111,23 @@ Imported the DAO into the server "app.py."
   from DAO import recipeDAO # imports the DAO
 
 
+Called the DAO methods (ge_all, find_by_id) from the app, and returned using [jsonify](https://pytutorial.com/flask-jsonify-create-json-responses-in-flask-applications/).
+
+
 Got a [basic html template](https://www.freecodecamp.org/news/basic-html5-template-boilerplate-code-example/).
+
+Created html file for each page:
+  - recipes.html for get_all()
+  - recipe.html for get_recipe_by_id()
+
+  stored them in /templates directory
+
+
+
+Seperated webppage style into css file
+Lots of css templates here:
+
+  https://www.w3schools.com/w3css/w3css_templates.asp
 
 
 Host on [pythonanywhere](https://www.pythonanywhere.com/).
