@@ -19,7 +19,7 @@ def getall():
     # Fetch all recipes from the DAO
     recipes = recipe_dao.get_all()
     # Render the recipes template with the recipes data
-    return render_template('recipes.html', recipes=recipes)
+    return jsonify(recipes)
 
 
 # curl "http://127.0.0.1:5000/recipes/1"
@@ -33,13 +33,20 @@ def get_recipe_by_id(id):
 
 
 # curl "http://127.0.0.1:5000/recipes"
-@app.route('/recipes', methods=['POST']) # Action: Create
+@app.route('/add_recipe', methods=['POST'])  # Action: Create
 def create_recipe():
-    # read json from the body
+    # Read JSON data from the body
     json_data = request.json
-    # Create the recipe using the DAO (this is a placeholder, implement as needed)
-    new_recipe = recipe_dao.create(json_data['name'], json_data['ingredients', json_data['directions']])
-    return jsonify(new_recipe), 201  # Return the created recipe with a 201 status code
+
+    # Ensure all necessary fields are provided
+    if 'name' not in json_data or 'ingredients' not in json_data or 'instructions' not in json_data:
+        return jsonify({"error": "Missing required fields: 'name', 'ingredients', and 'instructions'."}), 400
+
+    # Create the recipe using the DAO
+    new_recipe = recipe_dao.create(json_data['name'], json_data['ingredients'], json_data['instructions'])
+
+    # Return the created recipe with a 201 status code
+    return jsonify(new_recipe), 201
 
 
 @app.route('/recipes/<int:id>', methods=['PUT'])  # Action: Update
@@ -48,16 +55,16 @@ def update_recipe(id):
     json_data = request.json
 
     # Check if the required fields are present
-    if 'name' not in json_data or 'ingredients' not in json_data or 'directions' not in json_data:
-        return jsonify({"error": "Invalid data, 'name', 'ingredients', and 'directions' are required."}), 400
+    if 'name' not in json_data or 'ingredients' not in json_data or 'instructions' not in json_data:
+        return jsonify({"error": "Invalid data, 'name', 'ingredients', and 'instructions' are required."}), 400
 
     # Extract the data
     name = json_data['name']
     ingredients = json_data['ingredients']
-    directions = json_data['directions']
+    instructions  = json_data['instructions']
 
     # Call the DAO to update the recipe
-    updated_recipe = recipe_dao.update(id, name, ingredients, directions)
+    updated_recipe = recipe_dao.update(id, name, ingredients, instructions)
 
     if updated_recipe:
         # Return the updated recipe with a 200 status code
@@ -66,17 +73,18 @@ def update_recipe(id):
         # Return an error if the recipe was not found
         return jsonify({"error": "Recipe not found or update failed."}), 404  
 
+
 @app.route('/recipes/<int:id>', methods=['DELETE'])  # Action: Delete
 def delete_recipe(id):
     # Call the DAO to delete the recipe
     success = recipe_dao.delete(id)
-
     if success:
         # Return a success message with a 200 status code
         return jsonify({"message": "Recipe deleted successfully."}), 200
     else:
          # Return an error if the recipe was not found
         return jsonify({"error": "Recipe not found."}), 404 
+
 
 if __name__ == "__main__":
     # Start the application (in debug mode)
