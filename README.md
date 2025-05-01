@@ -19,13 +19,15 @@ Topics include but not limited to:
 
 ### Assignments
 
-- #### Assignment 2 - Card Draw
 
-assignment2-carddraw.py - simulates dealing a deck of cards. Uses Deck of Cards API https://deckofcardsapi.com
+#### Assignment 2 - Card Draw
+
+`assignment2-carddraw.py` simulates dealing a deck of cards. Uses Deck of Cards API https://deckofcardsapi.com
+
 
 #### Assignment 3 - CSO
 
-**assignment3-cso.py** - retrieves a dataset from the Central Statistics Office (CSO).
+`assignment3-cso.py` retrieves a dataset from the Central Statistics Office (CSO).
 
 `requests` module used - guide here: https://realpython.com/python-requests/
 
@@ -33,9 +35,10 @@ assignment2-carddraw.py - simulates dealing a deck of cards. Uses Deck of Cards 
 
 - json.dump() used to write the contents to file
 
+
 #### Assignment 4 - REST API
 
-**assignment04-github.py**
+`assignment04-github.py`
 
 github GET and 
 
@@ -52,10 +55,6 @@ A recipe database.
 Flask user guide:
 
 - https://flask.palletsprojects.com/en/stable/
-
-Stuff like render_template() and that covered here:
-
-- https://flask.palletsprojects.com/en/stable/api/
 
 Flask tutorial:
 
@@ -74,31 +73,41 @@ Started with directory structure for the project, such as putting the html page 
 
 Created a basic flask server "app.py". Did the skeleton mapping to do some CRUD operations.
 
-
 Created a database using [mysql](https://www.mysql.com/) (mysql-server). Installed on command line:
 
-  - $ sudo apt install mysql-server
+    $ sudo apt install mysql-server
 
 Launched my sql:
 
-  $ sudo mysql -u root
+    $ sudo mysql -u root -p
+
+Then type password "root"
 
 When running, created a new database using:
 
-  - create database recipes;
+    create database recipe;
 
 Then created a table in the new database:
 
-  - create table recipe(
+    create table recipe(
       id int NOT NULL AUTO_INCREMENT,
       PRIMARY KEY(id)
       name varchar(250)
       );
 
-Created a new column in the table:
+Created a new 'instructions' column in the table:
 
-  ALTER TABLE recipe
-  ADD COLUMN ingredients TEXT;
+    ALTER TABLE recipe
+    ADD COLUMN ingredients TEXT;
+
+Add another column:
+
+    ALTER TABLE recipe
+    ADD COLUMN instructions TEXT;     
+    
+did that on commandline, not dbeaver. seems to take ages either way, maybe its the TEXT type causing this -- had to stop the python app, it was connected to database and preventing the update column operation. I found that ouy by reading the output from the following:
+
+    SHOW PROCESSLIST;
 
 Created a [Database Access Object (DAO)](https://www.geeksforgeeks.org/data-access-object-pattern/) "recipeDAO.py".
 
@@ -108,29 +117,35 @@ In the DAO "mysql.connector" is used for connecting python to the mysql database
 
 Imported the DAO into the server "app.py."
 
-  from DAO import recipeDAO # imports the DAO
+    from DAO import recipeDAO # imports the DAO
 
 
-Called the DAO methods (ge_all, find_by_id) from the app, and returned using [jsonify](https://pytutorial.com/flask-jsonify-create-json-responses-in-flask-applications/).
-
-
-Got a [basic html template](https://www.freecodecamp.org/news/basic-html5-template-boilerplate-code-example/).
-
-Created html file for each page:
-  - recipes.html for get_all()
-  - recipe.html for get_recipe_by_id()
-
-  stored them in /templates directory
+Called the DAO methods (get_all, find_by_id) from the app, and returned using [jsonify](https://pytutorial.com/flask-jsonify-create-json-responses-in-flask-applications/).
 
 
 
-Seperated webppage style into css file
-Lots of css templates here:
+Created html - stored in /templates directory
+
+    it will house javascript and ajax functions (client side)
+
+    ajax functions take the https requests
+
+    javascript deals with the functionality ie what happens when you click a button
+
+    html is the static part of the user interface
+
+    javascript function > ajax function > server > DOA > SQL database
+
+Using the card class:
+
+  <div class="card">
+
+Seperated webppage style into css file. Lots of css templates here:
 
   https://www.w3schools.com/w3css/w3css_templates.asp
 
 
-Host on [pythonanywhere](https://www.pythonanywhere.com/).
+Hosted on [pythonanywhere](https://www.pythonanywhere.com/).
 
 
 
