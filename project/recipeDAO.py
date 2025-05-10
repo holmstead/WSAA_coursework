@@ -13,27 +13,76 @@ class RecipeDAO:
 
     # Return all recipes
     def get_all(self):
-        # execute sql query - return all rows from the recipe table
-        self.cursor.execute("SELECT * FROM recipe")
-        # retrieve all the results and return them
-        return self.cursor.fetchall()
+        # Open the file containg the query
+        with open('sql/get_all_recipes.sql', 'r') as file:
+            sql = file.read()
+        
+        # Execute sql query - return all rows from the recipe table
+        self.cursor.execute(sql)
+        
+        # Fetch results
+        results = self.cursor.fetchall()
+        return results
 
-
-    # Return one recipe
+    # Return one recipe by ID
     def find_by_id(self, id):
-        sql = "SELECT * FROM recipe WHERE id = %s"
+        # Open the file containg the query
+        with open('sql/get_recipe_by_id.sql', 'r') as file:
+            sql = file.read()
+                
+        # Exectue the query
         self.cursor.execute(sql, (id,))
-        result = self.cursor.fetchone()
+
+        # Fetch one row from the database query
+        result = self.cursor.fetchone() 
         return result
 
     # Insert a recipe into the database
-    def create(recipe):
-        return recipe
+    def create(self, name, ingredients, instructions):
+        # Open the file containg the query
+        with open('sql/add_new_recipe.sql', 'r') as file:
+            sql = file.read()
+        
+        # Exectue the query
+        self.cursor.execute(sql, (name, ingredients, instructions))
+        
+        # Commit the transaction
+        self.db.commit()  
+        return self.find_by_id(self.cursor.lastrowid)  # Return the created recipe (the last row inserted into the database)
 
     # Update a recipe
-    def update(id, recipe):
-        return recipe
+    def update(self, id, name, ingredients, instructions):
+        # Open the file containg the query
+        with open('sql/update_recipe.sql', 'r') as file:
+            sql = file.read()
+        
+        # Define the query
+        #sql = "UPDATE recipe SET name = %s, ingredients = %s, instructions = %s WHERE id = %s"
+        
+        # Exectue the query
+        self.cursor.execute(sql, (name, ingredients, instructions, id))
+
+        # Commit the transaction
+        self.db.commit()  
+        return self.find_by_id(id)  # Return the updated recipe
 
     # Deletes a recipe
-    def delete(id):
-        return True
+    def delete(self, id):
+        # Open the file containg the query
+        with open('sql/delete_recipe.sql', 'r') as file:
+            sql = file.read()
+
+        # Define the query
+        #sql = "DELETE FROM recipe WHERE id = %s"
+        
+        # Exectue the query
+        self.cursor.execute(sql, (id,))
+        
+        # Commit the transaction
+        self.db.commit()  
+        return True  # Return True if deletion was successful
+
+    # Close the database connection
+    def close(self):
+        self.cursor.close()
+        self.db.close()
