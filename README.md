@@ -7,11 +7,11 @@ This repository contains submissions for the Web Services and Applictions module
 ## About
 
 Topics include but not limited to:
--  data formats (XML, JSON, csv) and how to hanlde them
+- data formats (XML, JSON, csv) and how to hanlde them
 - Application Programmers Interface (APIs)
 - data transfer (HTTPs, URLs, curl, POSTMAN)
-- Flask (creating APIs)
-- virtual environmants
+- Flask (python library for creating APIs)
+- virtual environments
 
 
 ## Contents
@@ -57,67 +57,62 @@ Started with directory structure for the project, such as putting the html page 
 - https://flask.palletsprojects.com/en/stable/patterns/packages/
 
 
-Created a [basic flask server](https://www.geeksforgeeks.org/flask-creating-first-simple-application/) `app.py`. Did the skeleton mapping to do some [CRUD operations.](https://www.freecodecamp.org/news/crud-operations-explained/)
-
 Created a database using [mysql](https://www.mysql.com/) (mysql-server). MySQL is a relational database. Installed it on command line using the following command:
 
-    $ sudo apt install mysql-server
+    sudo apt install mysql-server
 
 - https://www.geeksforgeeks.org/what-is-mysql/
 
 Launched MySQL:
 
-    $ sudo mysql -u root -p
+    sudo mysql -u root -p
 
-It ask for password. When running, created a new database using:
+Created a new database called 'recipe':
 
-    create database recipe;
+    CREATE DATABASE recipe;
 
-Insted of interactin with MySQL on the command line, I used [DBeaver](https://en.wikipedia.org/wiki/DBeaver). Created a table in the new database:
+Instead of interacting with MySQL on the command line, I used [DBeaver](https://en.wikipedia.org/wiki/DBeaver). Created a table in the new database:
 
-    create table recipe(
-      id int NOT NULL AUTO_INCREMENT,
-      PRIMARY KEY(id)
-      name varchar(250)
-      );
+    CREATE TABLE recipe (
+        id INT NOT NULL AUTO_INCREMENT,
+        name VARCHAR(250),
+        ingredients TEXT,
+        instructions TEXT,
+        PRIMARY KEY (id)
+    );
 
-Created a new 'ingredients' column in the table:
 
-    ALTER TABLE recipe
-    ADD COLUMN ingredients TEXT;
+Created a [Database Access Object (DAO)](https://www.geeksforgeeks.org/data-access-object-pattern/) `recipeDAO.py`. The RecipeDAO is a [class](https://docs.python.org/3/tutorial/classes.html) that handles the database operations - [CRUD operations](https://www.freecodecamp.org/news/crud-operations-explained/):
 
-Add another column called 'instructions':
+- Create: Adding new recipes to the database
+- Read: Retrieving recipes
+- Update: Modifying existing recipe details
+- Delete: Removing recipes from the database
 
-    ALTER TABLE recipe
-    ADD COLUMN instructions TEXT;     
-    
-seems to take ages 
+The database connection info is stored in a seperate file `dbconfig.py`. 
 
--- had to stop the python app, it was connected to database and preventing the update column operation. Found that ouy by reading the output from the following:
+`mysql.connector` is used for connecting python to the mysql database - [W3 schools](https://www.w3schools.com/python/python_mysql_getstarted.asp)
 
-    SHOW PROCESSLIST;
+The DAO class is imported into the server app.py, which functions as a [RESTful API](https://www.geeksforgeeks.org/what-is-restful-api/). It handles HTTP methods such as `GET`, `POST`, `PUT`, and `DELETE` to perform operations on the database. The [mapping](https://www.geeksforgeeks.org/flask-app-routing/) between these HTTP methods and specific URL routes is defined using Flask’s `@app.route()` decorator. 
 
-Created a [Database Access Object (DAO)](https://www.geeksforgeeks.org/data-access-object-pattern/) `recipeDAO.py`.
+The app calls DAO methods like `get_all` and `find_by_id`, then uses [jsonify](https://pytutorial.com/flask-jsonify-create-json-responses-in-flask-applications/) to convert the returned data into JSON format .
 
-I put the database config info into a seperate file `dbconfig.py`.
+Stored in the `/templates` directory is static HTML for the front-end. It houses the [Javascript](https://www.w3schools.com/whatis/whatis_js.asp) code and uses [AJAX](https://www.w3schools.com/xml/ajax_intro.asp) (Asynchronous JavaScript and XML) methods on the client side.
 
-In the DAO "mysql.connector" is used for connecting python to the mysql database - [W3 schools](https://www.w3schools.com/python/python_mysql_getstarted.asp)
+AJAX functions handle the HTTP requests (such as GET, POST, PUT, DELETE), while JavaScript is responsible for the overall functionality — such as what happens when you click a button or interact with other elements on the page. 
 
-Imported the DAO into the server `app.py`.
+Some good examples of AJAX methods can be found on [W3 Schools AJAX](https://www.w3schools.com/js/js_ajax_examples.asp) examples. 
 
-    from DAO import recipeDAO
+For homepage used `window.addEventListner` instead of the older way of using `window.onload` 
+- https://stackoverflow.com/questions/20180251/when-to-use-window-onload
 
-Called the DAO methods (get_all, find_by_id) from the app, and returned using [jsonify](https://pytutorial.com/flask-jsonify-create-json-responses-in-flask-applications/).
+... sends a GET request to fetch all the recipes from the Flask backend. It generates some dynamic html to display each recipe, and creates edit/delete buttons for each recipe. 
 
-Created html - stored in /templates directory. It houses the javascript and ajax functions (client side). Ajax functions take the https requests. Javascript deals with the functionality i.e. what happens when you click a button.
+To add a new recipe there is a button that will bring up the (hidden) form to type the recipe info into:
 
-AJAX (Asynchronous JavaScript and XML) is a method where you use JavaScript to send or receive data from a server without refreshing the page.
+    <button onclick="updateRecipe(${recipe.id})">Save</button>
 
-The html is the static part of the user interface.
-
-    javascript function > ajax function > server > DOA > SQL database
-
-This bit hides the form for editing recipe, until the button is clicked:
+The 'update recipe' and 'add new recipe' forms are hidden until the relevent button is clicked:
 
     function editRecipe(id) {
         document.getElementById(`view-${id}`).style.display = 'none';
@@ -128,29 +123,49 @@ This bit hides the form for editing recipe, until the button is clicked:
 
 `style.display = 'block'` This makes the element visible and displays it as a block-level element, which means it will appear on the page normally.
 
- The button for which is at the beginning of the html file
 
-    <button onclick="updateRecipe(${recipe.id})">Save</button>
+Theres also a cancel button available when adding/editing a recipe, in case you don't want to save any changes. The function:
 
-Added a cancel button for when editing a recipe, in case you dont want to save any changes
-
-    <button onclick="cancelEdit(${recipe.id})">Cancel</button>
-
-
-Seperated webppage style into css file. Lots of css templates [here](https://www.w3schools.com/w3css/w3css_templates.asp).
-
-
-For the button containers I used [flexbox](https://www.w3schools.com/csS/css3_flexbox.asp) in the css:
-
-    /* Center buttons inside the button-container */
-    .button-container {
-        display: flex;             /* Use flexbox */
-        justify-content: center;   /* Center buttons horizontally */
-        gap: 10px;                 /* Space between buttons */
-        margin-top: 10px;          /* Optional: add some space above the buttons */
+    // Close Add Form
+    function closeAddForm() {
+        document.getElementById('addRecipeForm').style.display = 'none';
     }
 
-Hosted on [pythonanywhere](https://www.pythonanywhere.com/). First I made a github repo to deploy from:
+... basically hides the form again when the button is pressed:
+
+    <button type="button" onclick="closeAddForm()">Cancel</button>
+
+The delete button when pressed will [prompt for confirmation](https://www.codexworld.com/how-to/show-delete-confirmation-message-dialog-javascript/):
+
+    // Show confirmation dialog
+    const isConfirmed = confirm("Are you sure you want to delete this recipe?");
+
+#### CSS
+
+
+The webppage styling is seperated into a [CSS](https://www.w3schools.com/Css/css_intro.asp) file. Lots of CSS templates can be found [here](https://www.w3schools.com/w3css/w3css_templates.asp).
+
+The [card](https://www.w3schools.com/howto/howto_css_cards.asp) class is used to group the content in a nice way on the page.
+
+For the body and button containers I used [flexbox](https://www.w3schools.com/csS/css3_flexbox.asp) which dynamically adjusts the content layout in the container:
+
+    /* Body */
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Full viewport height */
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+        color: #333;
+        line-height: 1.6;
+    }
+
+#### Hosting on [pythonanywhere](https://www.pythonanywhere.com/).
+
+First, made a github repo to deploy from:
 
 - [holmstead/deploytopythonanywhere](https://github.com/holmstead/deploytopythonanywhere)
 
@@ -158,9 +173,7 @@ Cloned repo to local machine:
 
     git clone git@github.com:holmstead/deploytopythonanywhere.git
 
-Created new basic server `flask_app.py` to test out the setup on pythonanywhere.
-
-Set up a [virtual env](https://docs.python.org/3/library/venv.html):
+Set up a [virtual env](https://docs.python.org/3/library/venv.html) on local machine:
 
     python -m venv venv
 
@@ -168,25 +181,19 @@ Activated the environment (from parent directory):
     
     source venv/bin/activate
 
-Tested if server worked:
+Copied all the server files to the directory and tested if server worked:
 
     python3 flask_app.py
 
-Had to pip install `mysql-connector` in the virtual environment. Pushed up to github. Then went to pythonanywhere website and started a new bash console and cloned the repo:
+Had to pip install `mysql-connector` in the virtual environment. Pushed up to github. Created requirements file:
+
+    pip freeze requirements.txt
+    
+Started a new bash console on pythonanywhere and cloned the repo:
 
     git clone https://github.com/holmstead/deploytopythonanywhere.git   (https)
 
-Go to 'Open Web tab' and selected 'new web app'. Set the soiurce code as follows:
-
-    Source code: /home/holmstead/deploytopythonanywhere
-
-Created requirements file:
-
-    pip freeze requirements.txt
-
-Created new database "recipes".
-
-Checked if that worked:
+Created new database "recipes". Checked if it worked:
 
     mysql> show databases;
     +--------------------+
@@ -198,11 +205,11 @@ Checked if that worked:
     | performance_schema |
     +--------------------+
 
-Selected the new database
+Selected the new database:
 
     mysql> use holmstead$recipes
 
-Its empty, so then set up tables like the local database 'recipes'
+The new database is empty, so tables were set up like the local database 'recipe':
 
     CREATE TABLE recipe (
         id INT NOT NULL AUTO_INCREMENT,
@@ -212,7 +219,7 @@ Its empty, so then set up tables like the local database 'recipes'
         PRIMARY KEY (id)
     );
 
-Then checked if it worked:
+Check if new table was created:
 
     mysql> show tables;
     +-----------------------------+
@@ -222,7 +229,7 @@ Then checked if it worked:
     +-----------------------------+
 
 
-Then went to bash console:
+Then go to bash console:
 
     cd deploytopythonanywhere
 
@@ -238,9 +245,9 @@ Set up dbconfig.py to have the pythonanywhere database details:
         "database": "holmstead$recipes"
     }
 
-And it worked, link to hosted web app:
-
+And it worked! Link to hosted web app:
 - https://holmstead.pythonanywhere.com/
+
 
 ## Get Started
 
@@ -255,9 +262,9 @@ $ git clone https://github.com/holmstead/WSAA_coursework.git
 1. **Python**: Version 3.7 or higher. You can download it from [python.org](https://www.python.org/downloads/).
 
 2. **Dependencies**: Install the required Python packages by running:
-  ```bash
-  $ python pip install -r requirements.txt
-   ```
+
+        $ python pip install -r requirements.txt
+
 
 
 ## Get Help
@@ -266,29 +273,33 @@ VSCode help can be found using the links below:
 
 - https://code.visualstudio.com/docs/introvideos/basics
 
-Requests module:
-
-- https://docs.python-requests.org/en/latest/index.html
-
 
 ## Author
 
-M. Holmes, 2024
+M. Holmes, 2025
 
 holmstead@protonmail.com
 
+
 ## References
 
-Flask user guide:
-
+Flasks official user guide:
 - https://flask.palletsprojects.com/en/stable/
 
-Flask tutorial:
-
+Flask tutorial on geeksforgeeks website:
 - https://www.geeksforgeeks.org/flask-tutorial/
 
-The [Flask tutorial](https://flask.palletsprojects.com/en/stable/tutorial/) in the offical docs.
+The Flask tutorial in the offical docs:
+- https://flask.palletsprojects.com/en/stable/tutorial/
 
+Flask tutorial by freeCodeCamp:
+- https://www.youtube.com/watch?v=Z1RJmh_OqeA
 
-[freeCodeCamp flask tutorial](https://www.youtube.com/watch?v=Z1RJmh_OqeA) on youtube:
+Creating a basic flask server:
+- https://www.geeksforgeeks.org/flask-creating-first-simple-application/
 
+Flask server example with AJAX methods:
+- https://towardsdatascience.com/using-python-flask-and-ajax-to-pass-information-between-the-client-and-server-90670c64d688/
+
+Real Python covers frontend (HTML, Javascript, CSS) in this project:
+- https://realpython.com/flask-javascript-frontend-for-rest-api/
