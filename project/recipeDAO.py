@@ -55,15 +55,12 @@ class RecipeDAO:
         # Open the file containg the query
         with open('sql/update_recipe.sql', 'r') as file:
             sql = file.read()
-        
-        # Define the query
-        #sql = "UPDATE recipe SET name = %s, ingredients = %s, instructions = %s WHERE id = %s"
-        
+                
         # Exectue the query
         self.cursor.execute(sql, (name, ingredients, instructions, id))
 
         # Commit the transaction
-        self.db.commit()  
+        self.db.commit()
         return self.find_by_id(id)  # Return the updated recipe
 
     # Deletes a recipe
@@ -71,13 +68,10 @@ class RecipeDAO:
         # Open the file containg the query
         with open('sql/delete_recipe.sql', 'r') as file:
             sql = file.read()
-
-        # Define the query
-        #sql = "DELETE FROM recipe WHERE id = %s"
         
         # Exectue the query
         self.cursor.execute(sql, (id,))
-        
+
         # Commit the transaction
         self.db.commit()  
         return True  # Return True if deletion was successful

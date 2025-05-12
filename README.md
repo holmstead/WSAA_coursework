@@ -40,24 +40,19 @@ Topics include but not limited to:
 
 `assignment04-github.py`
 
-github GET and 
+GitHub GET and 
 
-- Getting started with REST api github
+- Getting started with REST API GitHub
 - https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api?apiVersion=2022-11-28
 
 - Got some fine grain tokens
 
 
-### Project
+### Project - A recipe database.
 
-A recipe database.
+The project directory structure was modelled on Flasks [package pattern](https://flask.palletsprojects.com/en/stable/patterns/packages/) guide.
 
-Started with directory structure for the project, such as putting the html page template 'index.html' in the template directory:
-
-- https://flask.palletsprojects.com/en/stable/patterns/packages/
-
-
-Created a database using [mysql](https://www.mysql.com/) (mysql-server). MySQL is a relational database. Installed it on command line using the following command:
+A database was created locally using [MySQL](https://www.mysql.com/) (mysql-server). MySQL is a [relational database](https://www.oracle.com/database/what-is-a-relational-database/). Install mysql using the following command:
 
     sudo apt install mysql-server
 
@@ -89,9 +84,7 @@ Created a [Database Access Object (DAO)](https://www.geeksforgeeks.org/data-acce
 - Update: Modifying existing recipe details
 - Delete: Removing recipes from the database
 
-The database connection info is stored in a seperate file `dbconfig.py`. 
-
-`mysql.connector` is used for connecting python to the mysql database - [W3 schools](https://www.w3schools.com/python/python_mysql_getstarted.asp)
+The database connection info is stored in a seperate file `dbconfig.py`. This improves security and modularity. `mysql.connector` is used for [connecting to the mysql database](https://www.w3schools.com/python/python_mysql_getstarted.asp).
 
 The DAO class is imported into the server app.py, which functions as a [RESTful API](https://www.geeksforgeeks.org/what-is-restful-api/). It handles HTTP methods such as `GET`, `POST`, `PUT`, and `DELETE` to perform operations on the database. The [mapping](https://www.geeksforgeeks.org/flask-app-routing/) between these HTTP methods and specific URL routes is defined using Flask’s `@app.route()` decorator. 
 
@@ -101,18 +94,30 @@ Stored in the `/templates` directory is static HTML for the front-end. It houses
 
 AJAX functions handle the HTTP requests (such as GET, POST, PUT, DELETE), while JavaScript is responsible for the overall functionality — such as what happens when you click a button or interact with other elements on the page. 
 
-Some good examples of AJAX methods can be found on [W3 Schools AJAX](https://www.w3schools.com/js/js_ajax_examples.asp) examples. 
+Some good examples of AJAX methods can be found on [W3 Schools AJAX](https://www.w3schools.com/js/js_ajax_examples.asp) examples.
 
-For homepage used `window.addEventListner` instead of the older way of using `window.onload` 
-- https://stackoverflow.com/questions/20180251/when-to-use-window-onload
+[Javascript functions](https://www.w3schools.com/js/js_functions.asp):
 
-... sends a GET request to fetch all the recipes from the Flask backend. It generates some dynamic html to display each recipe, and creates edit/delete buttons for each recipe. 
+- `submitNewRecipe()` sends a new recipe to the server.  Reads values from the "Add Recipe" form. Sends a POST request to /add_recipe with the recipe details in JSON. Reloads the page after submission to show the updated list.
 
-To add a new recipe there is a button that will bring up the (hidden) form to type the recipe info into:
+- `deleteRecipe(id)`
+Deletes a recipe from the database. Asks the user for confirmation using confirm(). If confirmed, sends a DELETE request to /recipes/{id}. Reloads the page afterward to reflect the change.
+
+- `editRecipe(id)` Opens the "Edit Recipe" form pre-filled with the selected recipe's data. Gets the recipe’s current data (name, ingredients, instructions) from the displayed HTML. Fills in the hidden edit form with those values. Hides the current recipe display and shows the edit form.
+
+ - `updateRecipe()` Sends updated recipe information to the server. Reads values from the "Edit Recipe" form. Sends a PUT request to /recipes/{id} with updated data. Reloads the page to reflect the changes.
+
+- `closeEditForm()` Closes the edit form without saving changes. Hides the edit form. Redisplays the original recipe block.
+
+- `closeAddForm()` Hides the "Add New Recipe" form when the user cancels. Sets the form's display style to none
+
+- `window.addEventListner` Used instead of the older way of using `window.onload` (seen [here](https://stackoverflow.com/questions/20180251/when-to-use-window-onload.)).  This sends a GET request to fetch all the recipes from the Flask backend. It generates some dynamic html to display each recipe, and creates edit/delete buttons for each recipe. 
+
+To add a new recipe there is a button that will bring up the (hidden) form [on click](https://www.w3schools.com/jsref/event_onclick.asp) to type the recipe info into:
 
     <button onclick="updateRecipe(${recipe.id})">Save</button>
 
-The 'update recipe' and 'add new recipe' forms are hidden until the relevent button is clicked:
+The 'update recipe' and 'add new recipe' [forms are hidden](https://bobbyhadz.com/blog/javascript-hide-element-by-id) until the relevent button is clicked:
 
     function editRecipe(id) {
         document.getElementById(`view-${id}`).style.display = 'none';
@@ -140,10 +145,26 @@ The delete button when pressed will [prompt for confirmation](https://www.codexw
     // Show confirmation dialog
     const isConfirmed = confirm("Are you sure you want to delete this recipe?");
 
+Values are read from form elements in the [DOM](https://www.w3schools.com/js/js_htmldom.asp) using the getElementById() function:
+
+    const name = document.getElementById('newName').value;
+
+The [`fetch()`](https://www.geeksforgeeks.org/javascript-fetch-method/) function can be used to send HTTP requests with different methods such as POST, PUT, DELETE, and GET, in JSON format:
+
+    fetch('/add_recipe', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ name, ingredients, instructions })
+    })
+
+
 #### CSS
 
+The webppage styling is seperated into a [CSS](https://www.w3schools.com/Css/css_intro.asp) file, []'external CSS'](https://www.w3schools.com/CSS/css_howto.asp). Lots of CSS templates can be found [here](https://www.w3schools.com/w3css/w3css_templates.asp).
 
-The webppage styling is seperated into a [CSS](https://www.w3schools.com/Css/css_intro.asp) file. Lots of CSS templates can be found [here](https://www.w3schools.com/w3css/w3css_templates.asp).
+[HTML is linked to the CSS](https://www.geeksforgeeks.org/how-to-link-a-css-file-to-html/) so that styles defined in the CSS file can be applied to elements in the HTML page:
+
+    <link rel="stylesheet" href="styles.css">
 
 The [card](https://www.w3schools.com/howto/howto_css_cards.asp) class is used to group the content in a nice way on the page.
 
@@ -163,7 +184,7 @@ For the body and button containers I used [flexbox](https://www.w3schools.com/cs
         line-height: 1.6;
     }
 
-#### Hosting on [pythonanywhere](https://www.pythonanywhere.com/).
+#### Hosting on [pythonanywhere](https://www.pythonanywhere.com/)
 
 First, made a github repo to deploy from:
 
@@ -253,33 +274,27 @@ And it worked! Link to hosted web app:
 
 Clone the repository:
 
-```
-$ git clone https://github.com/holmstead/WSAA_coursework.git
-```
+
+    git clone https://github.com/holmstead/WSAA_coursework.git
+
 
 ### Requirements
 
 1. **Python**: Version 3.7 or higher. You can download it from [python.org](https://www.python.org/downloads/).
 
-2. **Dependencies**: Install the required Python packages by running:
+2. **Dependencies**: Install the required Python packages:
 
-        $ python pip install -r requirements.txt
+        python pip install -r requirements.txt
 
+3. **MySQL**: Install the relational database: 
 
-
-## Get Help
-
-VSCode help can be found using the links below:
-
-- https://code.visualstudio.com/docs/introvideos/basics
-
+        sudo apt install mysql-server
 
 ## Author
 
 M. Holmes, 2025
 
 holmstead@protonmail.com
-
 
 ## References
 
@@ -303,3 +318,7 @@ Flask server example with AJAX methods:
 
 Real Python covers frontend (HTML, Javascript, CSS) in this project:
 - https://realpython.com/flask-javascript-frontend-for-rest-api/
+
+Banner image generated using [DALL.E 3](https://openai.com/index/dall-e-3/) by OpenAI.
+
+Code debugging and refactoring was done with the aid of a locally-installed open-source Large Language Model (LLM) [Ollama](https://github.com/ollama/ollama), specifically the Code LLama model.
